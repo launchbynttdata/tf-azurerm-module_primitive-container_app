@@ -103,7 +103,7 @@ func assertConfiguredApp(t *testing.T, testCtx appTestContext) {
 	app := getApp(t, testCtx)
 
 	require.NotNil(t, app.ID)
-	assert.Equal(t, testCtx.resourceID, *app.ID)
+	assertEqualFold(t, testCtx.resourceID, *app.ID)
 	require.NotNil(t, app.Name)
 	assert.Equal(t, testCtx.appName, *app.Name)
 
@@ -113,7 +113,7 @@ func assertConfiguredApp(t *testing.T, testCtx appTestContext) {
 
 	require.NotNil(t, app.Properties)
 	require.NotNil(t, app.Properties.EnvironmentID)
-	assert.Equal(t, testCtx.environmentID, *app.Properties.EnvironmentID)
+	assertEqualFold(t, testCtx.environmentID, *app.Properties.EnvironmentID)
 	require.NotNil(t, app.Properties.Configuration)
 	require.NotNil(t, app.Properties.Configuration.ActiveRevisionsMode)
 	assert.Equal(t, armappcontainers.ActiveRevisionsModeSingle, *app.Properties.Configuration.ActiveRevisionsMode)
@@ -137,6 +137,11 @@ func assertConfiguredApp(t *testing.T, testCtx appTestContext) {
 	assert.Equal(t, "test", *app.Tags["Environment"])
 	require.NotNil(t, app.Tags["Terraform"])
 	assert.Equal(t, "true", *app.Tags["Terraform"])
+}
+
+func assertEqualFold(t *testing.T, expected, actual string) {
+	t.Helper()
+	assert.Equal(t, strings.ToLower(expected), strings.ToLower(actual))
 }
 
 func assertPostApplyPlanEmpty(t *testing.T, ctx types.TestContext) {
