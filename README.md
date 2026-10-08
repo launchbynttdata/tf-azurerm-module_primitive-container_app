@@ -79,7 +79,7 @@ No modules.
 | <a name="output_container_app_environment_id"></a> [container\_app\_environment\_id](#output\_container\_app\_environment\_id) | Resource ID of the Container App Environment. |
 | <a name="output_custom_domain_verification_id"></a> [custom\_domain\_verification\_id](#output\_custom\_domain\_verification\_id) | Custom domain verification ID of the Container App. |
 | <a name="output_id"></a> [id](#output\_id) | Azure resource ID of the Container App. |
-| <a name="output_identity"></a> [identity](#output\_identity) | Managed identity block on the Container App. |
+| <a name="output_identity"></a> [identity](#output\_identity) | Managed identity block on the Container App. identity\_ids is an empty list when the app has no user-assigned identities. |
 | <a name="output_ingress_external_enabled"></a> [ingress\_external\_enabled](#output\_ingress\_external\_enabled) | Whether ingress accepts connections from outside the Container App Environment. Null when ingress is not configured. |
 | <a name="output_ingress_fqdn"></a> [ingress\_fqdn](#output\_ingress\_fqdn) | FQDN of the ingress. Null when ingress is not configured. |
 | <a name="output_latest_revision_fqdn"></a> [latest\_revision\_fqdn](#output\_latest\_revision\_fqdn) | FQDN of the latest revision. |

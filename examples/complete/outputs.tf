@@ -51,6 +51,6 @@ output "container_image" {
 }
 
 output "identity" {
-  description = "Managed identity block on the Container App."
+  description = "Managed identity block on the Container App. identity_ids is an empty list when the app has no user-assigned identities."
   value       = module.container_app.identity
 }

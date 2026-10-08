@@ -136,7 +136,7 @@ No resources.
 | <a name="output_container_app_environment_id"></a> [container\_app\_environment\_id](#output\_container\_app\_environment\_id) | Resource ID of the example Container App Environment. |
 | <a name="output_container_image"></a> [container\_image](#output\_container\_image) | Image of the app container. |
 | <a name="output_id"></a> [id](#output\_id) | Azure resource ID of the Container App. |
-| <a name="output_identity"></a> [identity](#output\_identity) | Managed identity block on the Container App. |
+| <a name="output_identity"></a> [identity](#output\_identity) | Managed identity block on the Container App. identity\_ids is an empty list when the app has no user-assigned identities. |
 | <a name="output_ingress_external_enabled"></a> [ingress\_external\_enabled](#output\_ingress\_external\_enabled) | Whether ingress accepts connections from outside the environment. |
 | <a name="output_location"></a> [location](#output\_location) | Azure region of the Container App. |
 | <a name="output_name"></a> [name](#output\_name) | Name of the Container App. |

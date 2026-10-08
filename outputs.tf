@@ -72,8 +72,12 @@ output "ingress_external_enabled" {
 }
 
 output "identity" {
-  description = "Managed identity block on the Container App."
-  value       = azurerm_container_app.container_app.identity
+  description = "Managed identity block on the Container App. identity_ids is an empty list when the app has no user-assigned identities."
+  value = [
+    for id in azurerm_container_app.container_app.identity : merge(id, {
+      identity_ids = id.identity_ids == null ? [] : id.identity_ids
+    })
+  ]
 }
 
 output "workload_profile_name" {
