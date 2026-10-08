@@ -181,49 +181,43 @@ variable "template" {
   }
 
   validation {
-    condition = (
-      var.template.min_replicas == null ||
-      (var.template.min_replicas >= 0 && var.template.min_replicas <= 300 && floor(var.template.min_replicas) == var.template.min_replicas)
+    condition = var.template.min_replicas == null ? true : (
+      var.template.min_replicas >= 0 && var.template.min_replicas <= 300 && floor(var.template.min_replicas) == var.template.min_replicas
     )
     error_message = "template.min_replicas must be a whole number from 0 to 300."
   }
 
   validation {
-    condition = (
-      var.template.max_replicas == null ||
-      (var.template.max_replicas >= 1 && var.template.max_replicas <= 300 && floor(var.template.max_replicas) == var.template.max_replicas)
+    condition = var.template.max_replicas == null ? true : (
+      var.template.max_replicas >= 1 && var.template.max_replicas <= 300 && floor(var.template.max_replicas) == var.template.max_replicas
     )
     error_message = "template.max_replicas must be a whole number from 1 to 300."
   }
 
   validation {
-    condition = (
-      var.template.min_replicas == null || var.template.max_replicas == null ||
+    condition = var.template.min_replicas == null || var.template.max_replicas == null ? true : (
       var.template.min_replicas <= var.template.max_replicas
     )
     error_message = "template.min_replicas must be less than or equal to template.max_replicas."
   }
 
   validation {
-    condition = (
-      var.template.cooldown_period_in_seconds == null ||
-      (var.template.cooldown_period_in_seconds >= 1 && floor(var.template.cooldown_period_in_seconds) == var.template.cooldown_period_in_seconds)
+    condition = var.template.cooldown_period_in_seconds == null ? true : (
+      var.template.cooldown_period_in_seconds >= 1 && floor(var.template.cooldown_period_in_seconds) == var.template.cooldown_period_in_seconds
     )
     error_message = "template.cooldown_period_in_seconds must be a whole number of at least 1."
   }
 
   validation {
-    condition = (
-      var.template.polling_interval_in_seconds == null ||
-      (var.template.polling_interval_in_seconds >= 1 && floor(var.template.polling_interval_in_seconds) == var.template.polling_interval_in_seconds)
+    condition = var.template.polling_interval_in_seconds == null ? true : (
+      var.template.polling_interval_in_seconds >= 1 && floor(var.template.polling_interval_in_seconds) == var.template.polling_interval_in_seconds
     )
     error_message = "template.polling_interval_in_seconds must be a whole number of at least 1."
   }
 
   validation {
-    condition = (
-      var.template.termination_grace_period_seconds == null ||
-      (var.template.termination_grace_period_seconds >= 0 && var.template.termination_grace_period_seconds <= 600 && floor(var.template.termination_grace_period_seconds) == var.template.termination_grace_period_seconds)
+    condition = var.template.termination_grace_period_seconds == null ? true : (
+      var.template.termination_grace_period_seconds >= 0 && var.template.termination_grace_period_seconds <= 600 && floor(var.template.termination_grace_period_seconds) == var.template.termination_grace_period_seconds
     )
     error_message = "template.termination_grace_period_seconds must be a whole number from 0 to 600."
   }
@@ -283,8 +277,8 @@ variable "template" {
   validation {
     condition = alltrue([
       for volume in var.template.volume :
-      (try(volume.storage_type, null) == null || contains(["AzureFile", "EmptyDir"], volume.storage_type)) &&
-      (try(volume.storage_type, "EmptyDir") != "AzureFile" || volume.storage_name != null)
+      (try(volume.storage_type, null) == null ? true : contains(["AzureFile", "EmptyDir"], volume.storage_type)) &&
+      (try(volume.storage_type, "EmptyDir") == "AzureFile" ? volume.storage_name != null : true)
     ])
     error_message = "volume.storage_type must be AzureFile or EmptyDir. storage_name is required when storage_type is AzureFile."
   }
@@ -323,20 +317,20 @@ variable "ingress" {
   default = null
 
   validation {
-    condition = var.ingress == null || (
+    condition = var.ingress == null ? true : (
       var.ingress.target_port >= 1 && var.ingress.target_port <= 65535 &&
-      (var.ingress.transport == null || contains(["auto", "http", "http2", "tcp"], var.ingress.transport)) &&
-      (var.ingress.transport == "tcp" || var.ingress.exposed_port == null) &&
-      (var.ingress.exposed_port == null || (var.ingress.exposed_port >= 1 && var.ingress.exposed_port <= 65535)) &&
+      (var.ingress.transport == null ? true : contains(["auto", "http", "http2", "tcp"], var.ingress.transport)) &&
+      (var.ingress.transport == "tcp" ? var.ingress.exposed_port != null : var.ingress.exposed_port == null) &&
+      (var.ingress.exposed_port == null ? true : (var.ingress.exposed_port >= 1 && var.ingress.exposed_port <= 65535)) &&
       length(var.ingress.traffic_weight) > 0 &&
       sum([for weight in var.ingress.traffic_weight : weight.percentage]) == 100 &&
       length([for weight in var.ingress.traffic_weight : weight if weight.latest_revision]) <= 1 &&
-      alltrue([for weight in var.ingress.traffic_weight : weight.latest_revision || weight.revision_suffix != null]) &&
+      alltrue([for weight in var.ingress.traffic_weight : weight.latest_revision ? true : weight.revision_suffix != null]) &&
       alltrue([for weight in var.ingress.traffic_weight : weight.percentage >= 0 && weight.percentage <= 100 && floor(weight.percentage) == weight.percentage]) &&
       length(distinct([for rule in var.ingress.ip_security_restriction : rule.action])) <= 1 &&
       alltrue([for rule in var.ingress.ip_security_restriction : contains(["Allow", "Deny"], rule.action)]) &&
-      (var.ingress.client_certificate_mode == null || contains(["accept", "require", "ignore"], var.ingress.client_certificate_mode)) &&
-      (var.ingress.cors == null || var.ingress.cors.max_age_in_seconds == null || var.ingress.cors.max_age_in_seconds >= 0)
+      (var.ingress.client_certificate_mode == null ? true : contains(["accept", "require", "ignore"], var.ingress.client_certificate_mode)) &&
+      (var.ingress.cors == null ? true : (var.ingress.cors.max_age_in_seconds == null ? true : var.ingress.cors.max_age_in_seconds >= 0))
     )
     error_message = "ingress target_port must be 1-65535; transport must be auto, http, http2, or tcp; exposed_port is only valid when transport is tcp; traffic_weight percentages must be whole numbers that sum to 100; at most one weight may set latest_revision; a weight with latest_revision false must set revision_suffix; ip_security_restriction actions must all be Allow or all be Deny; client_certificate_mode must be accept, require, or ignore; cors.max_age_in_seconds must be at least 0."
   }
@@ -392,9 +386,9 @@ variable "identity" {
   default = null
 
   validation {
-    condition = var.identity == null || (
+    condition = var.identity == null ? true : (
       contains(["SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned", "None"], var.identity.type) &&
-      (!contains(["UserAssigned", "SystemAssigned, UserAssigned"], var.identity.type) || length(var.identity.identity_ids) > 0)
+      (contains(["UserAssigned", "SystemAssigned, UserAssigned"], var.identity.type) ? length(var.identity.identity_ids) > 0 : true)
     )
     error_message = "identity.type must be SystemAssigned, UserAssigned, SystemAssigned, UserAssigned, or None. identity_ids is required when type includes UserAssigned."
   }
@@ -410,9 +404,9 @@ variable "dapr" {
   default = null
 
   validation {
-    condition = var.dapr == null || (
-      (var.dapr.app_protocol == null || contains(["http", "grpc"], var.dapr.app_protocol)) &&
-      (var.dapr.app_port == null || (var.dapr.app_port >= 1 && var.dapr.app_port <= 65535 && floor(var.dapr.app_port) == var.dapr.app_port))
+    condition = var.dapr == null ? true : (
+      (var.dapr.app_protocol == null ? true : contains(["http", "grpc"], var.dapr.app_protocol)) &&
+      (var.dapr.app_port == null ? true : (var.dapr.app_port >= 1 && var.dapr.app_port <= 65535 && floor(var.dapr.app_port) == var.dapr.app_port))
     )
     error_message = "dapr.app_protocol must be http or grpc. dapr.app_port must be a whole number from 1 to 65535."
   }
@@ -424,9 +418,8 @@ variable "max_inactive_revisions" {
   default     = null
 
   validation {
-    condition = (
-      var.max_inactive_revisions == null ||
-      (var.max_inactive_revisions >= 0 && var.max_inactive_revisions <= 100 && floor(var.max_inactive_revisions) == var.max_inactive_revisions)
+    condition = var.max_inactive_revisions == null ? true : (
+      var.max_inactive_revisions >= 0 && var.max_inactive_revisions <= 100 && floor(var.max_inactive_revisions) == var.max_inactive_revisions
     )
     error_message = "max_inactive_revisions must be a whole number from 0 to 100."
   }
