@@ -41,13 +41,13 @@ variable "revision_mode" {
 }
 
 variable "workload_profile_name" {
-  description = "Workload profile in the Container App Environment. Null uses the environment default (Consumption on a Consumption environment). Dedicated profiles are not limited to the Consumption CPU and memory pairs."
+  description = "Workload profile in the Container App Environment. Null and \"Consumption\" both select the Consumption profile, where Azure limits the app's total cpu and memory (see template). Dedicated profiles are limited by the profile's size instead."
   type        = string
   default     = null
 }
 
 variable "template" {
-  description = "App template. container is one or more containers. On Consumption, cpu and memory must be a documented pair such as 0.25 and 0.5Gi. Init containers, scale rules, and volumes are optional."
+  description = "App template. container is one or more containers; each cpu must be at least 0.1. On the Consumption profile, Azure requires the total cpu and memory across all containers to be one of its documented pairs, such as 0.25 and 0.5Gi or 4.0 and 8.0Gi. Consumption-only environments are capped at 2.0 and 4.0Gi. Azure validates these totals at apply time. Init containers, scale rules, and volumes are optional."
   type = object({
     container = list(object({
       name    = string
@@ -223,10 +223,11 @@ variable "template" {
   }
 
   validation {
-    condition = alltrue([
-      for container in var.template.container : container.cpu >= 0.1
-    ])
-    error_message = "Each container cpu must be at least 0.1."
+    condition = alltrue(concat(
+      [for container in var.template.container : container.cpu >= 0.1 && trimspace(container.memory) != ""],
+      [for container in var.template.init_container : (container.cpu == null ? true : container.cpu >= 0.1) && (container.memory == null ? true : trimspace(container.memory) != "")],
+    ))
+    error_message = "Each container and init_container cpu must be at least 0.1, and memory must not be empty."
   }
 
   validation {

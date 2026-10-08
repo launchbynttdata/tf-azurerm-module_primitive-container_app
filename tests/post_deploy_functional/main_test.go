@@ -34,6 +34,7 @@ func TestComposableComplete(t *testing.T) {
 		SetTestConfigFileName(testVarFile).
 		// lcaf's InitAndApplyAndIdempotent discards the post-apply plan (Logger.Discard).
 		// Own the empty-plan check in TestComposableComplete so a drift failure prints the diff.
+		// Remove this override once https://github.com/launchbynttdata/lcaf-component-terratest/issues/8 is fixed.
 		SetTestSpecificFlags(map[string]types.TestFlags{
 			"complete": {
 				"IS_TERRAFORM_IDEMPOTENT_APPLY": false,

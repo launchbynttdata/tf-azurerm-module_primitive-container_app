@@ -11,12 +11,14 @@
 // limitations under the License.
 
 terraform {
-  # Sensitive var.secrets in dynamic for_each does not load on Terraform 1.5.
+  # Sensitive var.secrets in a dynamic for_each needs Terraform 1.10.
   required_version = "~> 1.10"
 
   required_providers {
-    # Matches module_primitive/container_app_environment 2.0.5 (~> 4.68).
-    # The argument surface is the azurerm 4.68 schema.
+    # 4.68 is the oldest azurerm CI applies this module on, because the
+    # complete example's container_app_environment 2.0.5 requires it. The
+    # root's own arguments load from 4.66 (readiness and startup probe
+    # failure_count_threshold above 30); the floor stays at the tested range.
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.68"

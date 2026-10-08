@@ -310,15 +310,4 @@ resource "azurerm_container_app" "container_app" {
       app_protocol = dapr.value.app_protocol
     }
   }
-
-  lifecycle {
-    precondition {
-      condition = var.workload_profile_name != null || alltrue([
-        for container in local.consumption_containers : anytrue([
-          for pair in local.consumption_pairs : container.cpu == pair.cpu && contains(pair.memory, container.memory)
-        ])
-      ])
-      error_message = "On the Consumption profile, each container cpu and memory must be a documented pair (for example 0.25 and 0.5Gi). Set workload_profile_name to use a dedicated profile."
-    }
-  }
 }
