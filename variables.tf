@@ -11,12 +11,12 @@
 // limitations under the License.
 
 variable "name" {
-  description = "Name of the Container App. Must be 2-32 lowercase letters, numbers, or hyphens, and start and end with an alphanumeric character. Changing this forces a new resource."
+  description = "Name of the Container App. Must be 2-32 lowercase letters, numbers, or hyphens, start with a letter, end with a letter or number, and not contain consecutive hyphens. Changing this forces a new resource."
   type        = string
 
   validation {
-    condition     = can(regex("^[a-z0-9]([a-z0-9-]{0,30}[a-z0-9])$", var.name))
-    error_message = "name must be 2-32 lowercase alphanumeric characters or hyphens, and must start and end with an alphanumeric character."
+    condition     = can(regex("^[a-z][a-z0-9-]{0,30}[a-z0-9]$", var.name)) && !strcontains(var.name, "--")
+    error_message = "name must be 2-32 lowercase letters, numbers, or hyphens, start with a letter, end with a letter or number, and not contain consecutive hyphens."
   }
 }
 
