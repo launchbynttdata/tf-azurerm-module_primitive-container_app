@@ -295,7 +295,7 @@ resource "azurerm_container_app" "container_app" {
   }
 
   dynamic "identity" {
-    for_each = var.identity == null || var.identity.type == "None" ? [] : [var.identity]
+    for_each = var.identity == null ? [] : (var.identity.type == "None" ? [] : [var.identity])
     content {
       type         = identity.value.type
       identity_ids = length(identity.value.identity_ids) == 0 ? null : identity.value.identity_ids
