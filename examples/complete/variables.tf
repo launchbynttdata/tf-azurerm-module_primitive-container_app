@@ -79,21 +79,36 @@ variable "workload_profile_name" {
 }
 
 variable "template" {
-  description = "Container template passed to the Container App."
+  description = "Container template passed to the Container App. Probes set only transport and port so the provider defaults apply."
   type = object({
     container = list(object({
       name   = string
       image  = string
       cpu    = number
       memory = string
+      liveness_probe = object({
+        transport = string
+        port      = number
+      })
+      readiness_probe = object({
+        transport = string
+        port      = number
+      })
+      startup_probe = object({
+        transport = string
+        port      = number
+      })
     }))
   })
   default = {
     container = [{
-      name   = "app"
-      image  = "mcr.microsoft.com/k8se/quickstart:latest"
-      cpu    = 0.25
-      memory = "0.5Gi"
+      name            = "app"
+      image           = "mcr.microsoft.com/k8se/quickstart:latest"
+      cpu             = 0.25
+      memory          = "0.5Gi"
+      liveness_probe  = { transport = "HTTP", port = 80 }
+      readiness_probe = { transport = "HTTP", port = 80 }
+      startup_probe   = { transport = "TCP", port = 80 }
     }]
   }
 }

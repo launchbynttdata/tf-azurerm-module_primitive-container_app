@@ -233,13 +233,13 @@ variable "template" {
   validation {
     condition = alltrue(flatten([
       for container in var.template.container : [
-        contains(["TCP", "HTTP", "HTTPS"], try(container.liveness_probe.transport, "HTTP")),
-        try(container.liveness_probe.port, 1) >= 1 && try(container.liveness_probe.port, 1) <= 65535,
-        try(container.liveness_probe.transport, "HTTP") != "TCP" || try(container.liveness_probe.path, null) == null,
-        try(container.liveness_probe.initial_delay, 0) >= 0 && try(container.liveness_probe.initial_delay, 0) <= 60,
-        try(container.liveness_probe.interval_seconds, 1) >= 1 && try(container.liveness_probe.interval_seconds, 1) <= 240,
-        try(container.liveness_probe.timeout, 1) >= 1 && try(container.liveness_probe.timeout, 1) <= 240,
-        try(container.liveness_probe.failure_count_threshold, 1) >= 1 && try(container.liveness_probe.failure_count_threshold, 1) <= 30,
+        contains(["TCP", "HTTP", "HTTPS"], container.liveness_probe.transport),
+        container.liveness_probe.port >= 1 && container.liveness_probe.port <= 65535,
+        container.liveness_probe.transport != "TCP" || container.liveness_probe.path == null,
+        coalesce(container.liveness_probe.initial_delay, 0) >= 0 && coalesce(container.liveness_probe.initial_delay, 0) <= 60,
+        coalesce(container.liveness_probe.interval_seconds, 1) >= 1 && coalesce(container.liveness_probe.interval_seconds, 1) <= 240,
+        coalesce(container.liveness_probe.timeout, 1) >= 1 && coalesce(container.liveness_probe.timeout, 1) <= 240,
+        coalesce(container.liveness_probe.failure_count_threshold, 1) >= 1 && coalesce(container.liveness_probe.failure_count_threshold, 1) <= 30,
       ] if container.liveness_probe != null
     ]))
     error_message = "liveness_probe transport must be TCP, HTTP, or HTTPS; port must be 1-65535; path is only valid for HTTP and HTTPS; initial_delay must be 0-60; interval_seconds and timeout must be 1-240; failure_count_threshold must be 1-30."
@@ -251,10 +251,10 @@ variable "template" {
         contains(["TCP", "HTTP", "HTTPS"], container.readiness_probe.transport),
         container.readiness_probe.port >= 1 && container.readiness_probe.port <= 65535,
         container.readiness_probe.transport != "TCP" || container.readiness_probe.path == null,
-        try(container.readiness_probe.interval_seconds, 1) >= 1 && try(container.readiness_probe.interval_seconds, 1) <= 240,
-        try(container.readiness_probe.timeout, 1) >= 1 && try(container.readiness_probe.timeout, 1) <= 240,
-        try(container.readiness_probe.failure_count_threshold, 1) >= 1 && try(container.readiness_probe.failure_count_threshold, 1) <= 48,
-        try(container.readiness_probe.success_count_threshold, 1) >= 1 && try(container.readiness_probe.success_count_threshold, 1) <= 10,
+        coalesce(container.readiness_probe.interval_seconds, 1) >= 1 && coalesce(container.readiness_probe.interval_seconds, 1) <= 240,
+        coalesce(container.readiness_probe.timeout, 1) >= 1 && coalesce(container.readiness_probe.timeout, 1) <= 240,
+        coalesce(container.readiness_probe.failure_count_threshold, 1) >= 1 && coalesce(container.readiness_probe.failure_count_threshold, 1) <= 48,
+        coalesce(container.readiness_probe.success_count_threshold, 1) >= 1 && coalesce(container.readiness_probe.success_count_threshold, 1) <= 10,
       ] if container.readiness_probe != null
     ]))
     error_message = "readiness_probe transport must be TCP, HTTP, or HTTPS; port must be 1-65535; path is only valid for HTTP and HTTPS; interval_seconds and timeout must be 1-240; failure_count_threshold must be 1-48; success_count_threshold must be 1-10."
@@ -266,10 +266,10 @@ variable "template" {
         contains(["TCP", "HTTP", "HTTPS"], container.startup_probe.transport),
         container.startup_probe.port >= 1 && container.startup_probe.port <= 65535,
         container.startup_probe.transport != "TCP" || container.startup_probe.path == null,
-        try(container.startup_probe.interval_seconds, 1) >= 1 && try(container.startup_probe.interval_seconds, 1) <= 240,
-        try(container.startup_probe.timeout, 1) >= 1 && try(container.startup_probe.timeout, 1) <= 240,
-        try(container.startup_probe.failure_count_threshold, 1) >= 1 && try(container.startup_probe.failure_count_threshold, 1) <= 240,
-        try(container.startup_probe.initial_delay, 0) >= 0 && try(container.startup_probe.initial_delay, 0) <= 60,
+        coalesce(container.startup_probe.interval_seconds, 1) >= 1 && coalesce(container.startup_probe.interval_seconds, 1) <= 240,
+        coalesce(container.startup_probe.timeout, 1) >= 1 && coalesce(container.startup_probe.timeout, 1) <= 240,
+        coalesce(container.startup_probe.failure_count_threshold, 1) >= 1 && coalesce(container.startup_probe.failure_count_threshold, 1) <= 240,
+        coalesce(container.startup_probe.initial_delay, 0) >= 0 && coalesce(container.startup_probe.initial_delay, 0) <= 60,
       ] if container.startup_probe != null
     ]))
     error_message = "startup_probe transport must be TCP, HTTP, or HTTPS; port must be 1-65535; path is only valid for HTTP and HTTPS; initial_delay must be 0-60; interval_seconds and timeout must be 1-240; failure_count_threshold must be 1-240."

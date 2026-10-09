@@ -30,11 +30,12 @@ import (
 )
 
 const (
-	expectedImage   = "mcr.microsoft.com/k8se/quickstart:latest"
-	expectedCPU     = 0.25
-	expectedMemory  = "0.5Gi"
-	mutatedTagKey   = "Mutated"
-	mutatedTagValue = "true"
+	expectedImage     = "mcr.microsoft.com/k8se/quickstart:latest"
+	expectedCPU       = 0.25
+	expectedMemory    = "0.5Gi"
+	expectedProbePort = int32(80)
+	mutatedTagKey     = "Mutated"
+	mutatedTagValue   = "true"
 )
 
 func expectedTags() map[string]*string {
@@ -131,6 +132,23 @@ func assertConfiguredApp(t *testing.T, testCtx appTestContext) {
 	assert.Equal(t, expectedCPU, *container.Resources.CPU)
 	require.NotNil(t, container.Resources.Memory)
 	assert.Equal(t, expectedMemory, *container.Resources.Memory)
+
+	probes := map[armappcontainers.Type]*armappcontainers.ContainerAppProbe{}
+	for _, probe := range container.Probes {
+		require.NotNil(t, probe.Type)
+		probes[*probe.Type] = probe
+	}
+	require.Len(t, probes, 3)
+	for _, probeType := range []armappcontainers.Type{armappcontainers.TypeLiveness, armappcontainers.TypeReadiness} {
+		require.Contains(t, probes, probeType)
+		require.NotNil(t, probes[probeType].HTTPGet, "%s probe should use HTTP", probeType)
+		require.NotNil(t, probes[probeType].HTTPGet.Port)
+		assert.Equal(t, expectedProbePort, *probes[probeType].HTTPGet.Port)
+	}
+	require.Contains(t, probes, armappcontainers.TypeStartup)
+	require.NotNil(t, probes[armappcontainers.TypeStartup].TCPSocket, "startup probe should use TCP")
+	require.NotNil(t, probes[armappcontainers.TypeStartup].TCPSocket.Port)
+	assert.Equal(t, expectedProbePort, *probes[armappcontainers.TypeStartup].TCPSocket.Port)
 
 	require.NotNil(t, app.Tags)
 	require.NotNil(t, app.Tags["Environment"])
