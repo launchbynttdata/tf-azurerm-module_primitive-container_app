@@ -7,7 +7,7 @@
 
 This Terraform primitive manages one Azure Container App (`azurerm_container_app`). It wraps a single app: revision mode, template containers, ingress, identity, registries, and secrets. The Container App Environment, Log Analytics workspace, and resource group belong in the calling stack.
 
-The provider constraint is azurerm `~> 4.68`, the oldest release the complete example and CI apply this module on. Terraform `~> 1.10` is required because sensitive `secrets` are iterated in a `dynamic` block.
+The provider constraint is azurerm `~> 4.66`, the first release that accepts the readiness and startup probe `failure_count_threshold` limits this module allows. The complete example requires `~> 4.68` because `container_app_environment` 2.0.5 needs it, so CI applies this module on 4.68 and later. Terraform `~> 1.10` is required because sensitive `secrets` are iterated in a `dynamic` block.
 
 ## Usage
 
@@ -42,7 +42,7 @@ module "container_app" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.10 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 4.68 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 4.66 |
 
 ## Modules
 

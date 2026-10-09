@@ -15,13 +15,12 @@ terraform {
   required_version = "~> 1.10"
 
   required_providers {
-    # 4.68 is the oldest azurerm CI applies this module on, because the
-    # complete example's container_app_environment 2.0.5 requires it. The
-    # root's own arguments load from 4.66 (readiness and startup probe
-    # failure_count_threshold above 30); the floor stays at the tested range.
+    # 4.66 raised the readiness probe failure_count_threshold limit to 48 and
+    # the startup probe limit to 240 (4.65 caps both at 30); the probe
+    # validations here allow those values.
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.68"
+      version = "~> 4.66"
     }
   }
 }

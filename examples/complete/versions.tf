@@ -14,6 +14,7 @@ terraform {
   required_version = "~> 1.10"
 
   required_providers {
+    # container_app_environment 2.0.5 requires azurerm 4.68.
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.68"
