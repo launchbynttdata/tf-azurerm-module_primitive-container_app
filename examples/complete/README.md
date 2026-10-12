@@ -45,6 +45,11 @@ module "log_analytics_workspace" {
   tags = merge(var.tags, {
     resource_name = module.resource_names["log_analytics"].standard
   })
+
+  # module.resource_group.name is the input string, so it does not order this
+  # module after the group is created (tf-azurerm-module_primitive-resource_group#37).
+  # Remove once #38 is released and this example resolves that version.
+  depends_on = [module.resource_group]
 }
 
 module "container_app_environment" {
